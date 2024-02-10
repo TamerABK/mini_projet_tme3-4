@@ -81,13 +81,13 @@ void liberer_biblio(Biblio* biblio){
 void supprimer_ouvrage(Biblio* biblio,int num, char* auteur, char* titre){
 	Livre* livre_curr=biblio->L;
     Livre* livre_compar= creer_livre(num,titre,auteur);
-	Livre* livre_prec;
-	while(livre_curr && compare_livre(livre_curr,livre_compar)!=1 ){
+	Livre* livre_prec=NULL;
+	while(livre_curr !=NULL && compare_livre(livre_curr,livre_compar)!=1 ){
 		livre_prec=livre_curr;
 		livre_curr=livre_curr->suivant;
 	}
-	if(livre_curr && compare_livre(livre_curr,livre_compar)!=1){
-		if(livre_prec){
+	if(livre_curr !=NULL){
+		if(livre_prec==NULL){
 			biblio->L=livre_curr->suivant;
 		}
 		else{

@@ -91,6 +91,7 @@ int main(int argc,char** argv){
                     BiblioH* ouvrages_auteur = recherche_par_auteurH(biblio, auteur_recherche);
                     if (ouvrages_auteur != NULL) {
                         printf("Ouvrages trouvés pour l'auteur %s:\n", auteur_recherche);
+                        printf("%d %d\n",ouvrages_auteur->m,ouvrages_auteur->nE);
                         afficher_biblioH(ouvrages_auteur);
                         liberer_biblioH(ouvrages_auteur);
                     } else {
@@ -103,6 +104,8 @@ int main(int argc,char** argv){
                     BiblioH* exemplaires = recherche_exemplairesH(biblio);
                     if (exemplaires != NULL) {
                         printf("Exemplaires trouvés :\n");
+                        printf("%p\n",exemplaires);
+                        
                         afficher_biblioH(exemplaires);
                         liberer_biblioH(exemplaires);
                     } else {

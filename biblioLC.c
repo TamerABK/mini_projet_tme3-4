@@ -53,8 +53,9 @@ int compare_livre(Livre* l1, Livre* l2){
 
 // FONCTIONS LIBERATION
 
-void liberer_livre(Livre *livre)
-{
+void liberer_livre(Livre *livre){
+    if (!livre) return ;
+    
     free(livre->auteur);
     free(livre->titre);
     free(livre);
@@ -63,6 +64,8 @@ void liberer_livre(Livre *livre)
 
 
 void liberer_biblio(Biblio* biblio){
+
+    if (!biblio) return ;
 
     Livre* entrainDeLibere=biblio->L;
     Livre* aLibere;

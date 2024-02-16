@@ -79,19 +79,17 @@ BiblioH* creer_biblioH(int m){
 
     BiblioH* biblio=(BiblioH*)malloc(sizeof(BiblioH));
 
-    if(!biblio){
+    if(biblio==NULL){
         printf("Erreur d'allocation de memoire\n");
         exit(EXIT_FAILURE);
     }
 
     biblio->m=m;
     biblio->nE=0;
-    biblio->T=malloc(m*sizeof(LivreH*));
+    biblio->T=(LivreH**)malloc(m*sizeof(LivreH*));
 
-    if(!biblio->T){
-        printf("Erreur d'allocation de memoire\n");
-        exit(EXIT_FAILURE);
-    }
+
+
 
     return biblio;
 
@@ -101,6 +99,8 @@ BiblioH* creer_biblioH(int m){
 
 void liberer_livreH(LivreH* livre){
 
+    if (!livre) return;
+    
     free(livre->auteur);
     free(livre->titre);
     free(livre);
@@ -109,6 +109,8 @@ void liberer_livreH(LivreH* livre){
 
 void liberer_biblioH(BiblioH* biblio){
     
+    if (!biblio) return ;
+
     LivreH* livre_curr,*livre_temp;
 
     for (int i=0;i<biblio->m;i++){
@@ -166,7 +168,7 @@ void supprimer_ouvrageH(BiblioH* biblio,int num,char* titre,char* auteur){
 
 int fonctionHachage(int clef,int m){
 
-  return abs(m*(clef*A-abs(clef*A)))%m;
+  return 1;
 
 }
 
@@ -179,9 +181,16 @@ void inserer(BiblioH* biblio,int num,char* titre,char* auteur){
     LivreH* livre_nv=creer_livreH(num,titre,auteur);
     int clef_hashe=fonctionHachage(livre_nv->clef,biblio->m);
 
+    if(biblio->T[clef_hashe]==NULL)
+    {
+        biblio->T[clef_hashe]=livre_nv;
+    }else
+    {
+      livre_nv->suivant=biblio->T[clef_hashe];
+        biblio->T[clef_hashe]=livre_nv;  
+    }
     
-    livre_nv->suivant=biblio->T[clef_hashe];
-    biblio->T[clef_hashe]=livre_nv;
+
     biblio->nE++;
 
 }
@@ -254,7 +263,7 @@ LivreH* recherche_par_titreH(BiblioH* biblio,char* titre){
 BiblioH* recherche_par_auteurH(BiblioH* biblio,char* auteur_recherche){
 
     int clef_hache=fonctionHachage(fonctionClef(auteur_recherche),biblio->m);
-    BiblioH* biblio_auteur= creer_biblioH(1);
+    BiblioH* biblio_auteur= creer_biblioH(2);
     LivreH* livre_curr=biblio->T[clef_hache];
     LivreH* clone;
 
@@ -262,10 +271,7 @@ BiblioH* recherche_par_auteurH(BiblioH* biblio,char* auteur_recherche){
     {
         if (strcmp(auteur_recherche,livre_curr->auteur)==0)
         {
-            clone=clone_livreH(livre_curr);
-            clone->suivant=biblio->T[0];
-            biblio->T[0]=clone;
-            biblio->nE++;
+            inserer(biblio_auteur,livre_curr->num,livre_curr->titre,livre_curr->auteur);
         }
 
         livre_curr=livre_curr->suivant;
@@ -277,11 +283,17 @@ BiblioH* recherche_par_auteurH(BiblioH* biblio,char* auteur_recherche){
 
 BiblioH* recherche_exemplairesH(BiblioH* biblio){
 
-    BiblioH* biblio_exemp= creer_biblioH(1);
+    if (!biblio)
+    {
+        printf("recherche_exemplairesH: biblio vide\n");
+        return NULL;
+    }
+    BiblioH* biblio_exemp= creer_biblioH(2);
     LivreH* livre_curr,* livre_compare;
-
-    for (int i=0;i<biblio->m;i++){
-        livre_curr=biblio->T[i];
+    
+    inserer(biblio_exemp,100,"moi","pas");
+    /* for (int i=0;i<biblio->m;i++){
+        // livre_curr=biblio->T[i];
 
         while (livre_curr)
         {
@@ -300,7 +312,7 @@ BiblioH* recherche_exemplairesH(BiblioH* biblio){
         }
         
 
-    }
+    }*/
 
     return biblio_exemp;
     
@@ -309,21 +321,32 @@ BiblioH* recherche_exemplairesH(BiblioH* biblio){
 // FONCTION AFFICHAGE
 
 void afficher_livreH(LivreH* l){
+    if (!l) return ;
 	printf("%d : %s - %s\n",l->num,l->titre,l->auteur);
 }
 
 void afficher_biblioH(BiblioH* biblio){
 
-    LivreH* livre_curr;
-
-    for (int i=0;i<biblio->m;i++)
+    if (biblio==NULL)
     {
-        livre_curr=biblio->T[i];
+        printf ("afficher_biblioH: Biblio vide\n");
+        return ;
+    }
 
-        while (livre_curr)
-        {
+    LivreH* livre_curr;
+    printf("%d %d\n",biblio->m,biblio->nE);
+    for (int i=0;i<biblio->m;i++)
+    {   
+        printf("%d----\n",i);
+        livre_curr=biblio->T[i];
+    
+        while (livre_curr!=NULL)
+        {   
+            
             afficher_livreH(livre_curr);
+            
             livre_curr=livre_curr->suivant;
+        
         }
         
     }

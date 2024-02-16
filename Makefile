@@ -1,5 +1,5 @@
-CFLAGS = -g -Wno-unused-parameter
-CC = gcc
+CFLAGS = -g -Wno-unused-parameter -ggdb
+CC = gcc 
 
 PROGRAMS= mainLC mainH
 

@@ -35,7 +35,7 @@ int fonctionClef(char* auteur){
 
 int compare_livreH(LivreH* livre1,LivreH* livre2){
 
-    if (strcmp(livre1->titre,livre2->titre)==0 && strcmp(livre1->auteur,livre2->auteur))
+    if (strcmp(livre1->titre,livre2->titre)==0 && strcmp(livre1->auteur,livre2->auteur)==0)
     {
         if (livre1->num==livre2->num)
         {
@@ -207,7 +207,12 @@ void inserer(BiblioH* biblio,int num,char* titre,char* auteur){
 
 void fusion_biblioH(BiblioH* biblio1, BiblioH* biblio2){
 
-    LivreH* livre_curr;
+    if(!biblio2) return;
+    if(!biblio1)
+    {
+        biblio1=biblio2;
+    }else{
+        LivreH* livre_curr;
 
     for (int i=0;i<biblio2->m;i++)
     {
@@ -223,6 +228,8 @@ void fusion_biblioH(BiblioH* biblio1, BiblioH* biblio2){
     }
 
     liberer_biblioH(biblio2);
+    }
+    
 
 }
 // FONCTIONS RECHERCHE
@@ -292,39 +299,37 @@ BiblioH* recherche_par_auteurH(BiblioH* biblio,char* auteur_recherche){
 
 BiblioH* recherche_exemplairesH(BiblioH* biblio){
 
-    if (!biblio)
-    {
+    if (!biblio){
         printf("recherche_exemplairesH: biblio vide\n");
         return NULL;
     }
-    BiblioH* biblio_exemp= creer_biblioH(2);
-    LivreH* livre_curr,* livre_compare;
     
-
-    for (int i=0;i<biblio->m;i++){
-        livre_curr=biblio->T[i];
-
-        while (livre_curr)
-        {
-          livre_compare=biblio->T[i];
-
-          while (livre_compare)
-          {
-            if (compare_livreH(livre_compare,livre_curr)==2)
-            {
-                inserer(biblio_exemp,livre_curr->num,livre_curr->titre,livre_curr->auteur);
-            }
-            livre_compare=livre_compare->suivant;
-          }
-            
-            livre_curr=livre_curr->suivant;
-        }
+    BiblioH* biblio_exemp = creer_biblioH(2);
+    LivreH* livre_curr, *livre_compare;
+    
+    for (int i = 0; i < biblio->m; i++){
+        livre_curr = biblio->T[i];
         
-
+        while (livre_curr){
+            livre_compare = biblio->T[i];
+            int cpt = 0;
+            
+            while (livre_compare){
+                if (livre_curr != livre_compare && compare_livreH(livre_curr, livre_compare) == 2){
+                    cpt++;
+                }
+                livre_compare = livre_compare->suivant;
+            }
+            
+            if (cpt > 0){
+                inserer(biblio_exemp, livre_curr->num, livre_curr->titre, livre_curr->auteur);
+            }
+            
+            livre_curr = livre_curr->suivant;
+        }
     }
-
-    return biblio_exemp;
     
+    return biblio_exemp;
 }
 
 // FONCTION AFFICHAGE

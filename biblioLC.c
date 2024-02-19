@@ -128,6 +128,7 @@ void fusion_biblio(Biblio* b1, Biblio* b2){
     }
 
     b2->L = NULL; // Vider la deuxième bibliothèque
+    free(b2);
 }
 
 

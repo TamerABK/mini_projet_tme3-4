@@ -34,7 +34,8 @@ int main(int argc,char** argv){
     int N_LIGNES=atoi(argv[2]);
 
     BiblioH* biblio=charger_n_entreesH(NOMFIC,N_LIGNES);
-    int choix;
+    BiblioH* biblio2=charger_n_entreesH("test2.txt",50);
+    int choix,segfault_prevention=1;
     
     do {
         menu();
@@ -124,20 +125,28 @@ int main(int argc,char** argv){
                 break;
             case 8:
                 {
-                    BiblioH* biblio2 = creer_biblioH(1);
+                    if(segfault_prevention==1)
+                    {
                     fusion_biblioH(biblio, biblio2);
                     printf("Bibliothèques fusionnées avec succès.\n");
+                    segfault_prevention=0;
+                    }else{
+                        printf("Fusion deja faite\n");
+                    }
                 }
                 break;
             case 9:
                 {
                     enregistrer_biblioH(biblio,"test.txt");
+                    liberer_biblioH(biblio);
+                    if(segfault_prevention==1) liberer_biblioH(biblio2);
                     choix=0;
                     printf("Programme terminé.\n");
                 }
                 break;
             case 0:
                 liberer_biblioH(biblio);
+                if (segfault_prevention==1) liberer_biblioH(biblio2);
                 printf("Programme terminé.\n");
                 break;
             default:

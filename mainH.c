@@ -104,8 +104,6 @@ int main(int argc,char** argv){
                     BiblioH* exemplaires = recherche_exemplairesH(biblio);
                     if (exemplaires != NULL) {
                         printf("Exemplaires trouvés :\n");
-                        printf("%p\n",exemplaires);
-                        
                         afficher_biblioH(exemplaires);
                         liberer_biblioH(exemplaires);
                     } else {
@@ -134,6 +132,8 @@ int main(int argc,char** argv){
             case 9:
                 {
                     enregistrer_biblioH(biblio,"test.txt");
+                    choix=0;
+                    printf("Programme terminé.\n");
                 }
                 break;
             case 0:
@@ -141,7 +141,10 @@ int main(int argc,char** argv){
                 printf("Programme terminé.\n");
                 break;
             default:
+                {
                 printf("Option invalide. Veuillez choisir à nouveau.\n");
+                }
+            
         }
     } while (choix != 0);
 

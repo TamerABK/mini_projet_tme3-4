@@ -130,6 +130,8 @@ int main(int argc,char** argv){
             case 9:
                 {
                     enregistrer_biblio(biblio,"test.txt");
+                    choix=0;
+                    printf("Programme terminé.\n");
                 }
                 break;
             case 0:

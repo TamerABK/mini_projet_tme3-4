@@ -21,15 +21,12 @@ typedef struct
 Livre* creer_livre(int num,char* titre,char *auteur);
 Biblio* creer_biblio();
 
-// FONCTION COMPARAISON
-
-int compare_livre(Livre* l1, Livre* l2);
 
 // FONCTIONS LIBERATION
 
 void liberer_livre(Livre *livre);
 void liberer_biblio(Biblio* biblio);
-void supprimer_ouvrage(Biblio* biblio,int num, char* auteur, char* titre);
+void supprimer_ouvrage(Biblio* biblio,int num, char* titre, char* auteur);
 
 // FONCTION INSERTION
 
@@ -44,6 +41,7 @@ void fusion_biblio(Biblio* b1, Biblio* b2);
 Livre* recherche_par_num(Biblio* biblio,int num_recherche);
 Livre* recherche_par_titre(Biblio* biblio,char* titre_recherche);
 Biblio* recherche_par_auteur(Biblio* biblio,char* auteur_recherche);
+int recherche_livre(Biblio* biblio, Livre* livre_recherche);
 Biblio* recherche_exemplaires(Biblio* biblio);
 
 // FONCTION AFFICHAGE

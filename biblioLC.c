@@ -13,7 +13,7 @@ Livre* creer_livre(int num,char* titre,char *auteur){
 
     Livre* livre=(Livre*)malloc(sizeof(Livre));
 
-    if (!livre)
+    if (livre==NULL)
     { 
         printf("Memory allocation error");
         exit(EXIT_FAILURE);
@@ -29,27 +29,14 @@ Livre* creer_livre(int num,char* titre,char *auteur){
 
 Biblio* creer_biblio(){
     Biblio* biblio=(Biblio*)malloc(sizeof(Biblio));
+    if(biblio == NULL){
+        printf("Erreur d'allocation de mémoire\n");
+        exit(EXIT_FAILURE);
+    }
     biblio->L=NULL;
     return biblio;
 }
 
-// FONCTION DE COMPARAISON
-
-int compare_livre(Livre* l1, Livre* l2){
-
-    if ((strcmp(l1->auteur,l2->auteur)==0)&&(strcmp(l1->titre,l2->titre)==0))
-    {
-        if (l1->num==l2->num)
-        {
-            return 1;
-        }else{
-            return 2;
-        }
-    }
-
-    return 0;
-
-}
 
 // FONCTIONS LIBERATION
 
@@ -70,7 +57,7 @@ void liberer_biblio(Biblio* biblio){
     Livre* entrainDeLibere=biblio->L;
     Livre* aLibere;
 
-    while (!entrainDeLibere)
+    while (entrainDeLibere)
     {
         aLibere=entrainDeLibere->suivant;
         liberer_livre(entrainDeLibere);
@@ -81,24 +68,35 @@ void liberer_biblio(Biblio* biblio){
     
 }
 
-void supprimer_ouvrage(Biblio* biblio,int num, char* auteur, char* titre){
-	Livre* livre_curr=biblio->L;
-    Livre* livre_compar= creer_livre(num,titre,auteur);
-	Livre* livre_prec=NULL;
-	while(livre_curr !=NULL && compare_livre(livre_curr,livre_compar)!=1 ){
-		livre_prec=livre_curr;
-		livre_curr=livre_curr->suivant;
-	}
-	if(livre_curr !=NULL){
-		if(livre_prec==NULL){
-			biblio->L=livre_curr->suivant;
-		}
-		else{
-			livre_prec->suivant=livre_curr->suivant;
-		}
-		liberer_livre(livre_curr);
-	}
-    liberer_livre(livre_compar);
+void supprimer_ouvrage(Biblio* biblio,int num, char* titre, char* auteur){
+	if (biblio==NULL) 
+		return;
+
+    	Livre* courant = biblio->L;
+    	Livre* precedent = NULL;
+    	int ouvrageTrouve = 0;
+
+    	while (courant) {
+        	if (courant->num == num && strcmp(courant->auteur, auteur) == 0 && strcmp(courant->titre, titre) == 0) {
+            		ouvrageTrouve = 1;
+            		if (precedent) {
+                		precedent->suivant = courant->suivant;
+                		liberer_livre(courant);
+                		break;
+            		} else {
+                		biblio->L = courant->suivant;
+                		liberer_livre(courant);
+                		break;
+            		}
+        	}
+
+        	precedent = courant;
+        	courant = courant->suivant;
+   	}
+
+    	if (ouvrageTrouve==0) {
+        	printf("L'ouvrage avec le numéro %d, le titre %s et l'auteur %s n'existe pas dans la bibliothèque.\n", num, titre, auteur);
+    	}
 }
 
 // FONCTION INSERTION
@@ -114,30 +112,22 @@ void inserer_en_tete(Biblio* biblio,int num,char *titre,char* auteur){
 // FONCTION FUSION
 
 void fusion_biblio(Biblio* b1, Biblio* b2){
-	
-    if (!(b1->L)){
-        Biblio* b_temp=b1;
-        b1=b2;
-        free (b_temp);
-
+    if (b1 == NULL || b2 == NULL) {
+        return; // Vérifier si les pointeurs sont valides
     }
 
-    if (!(b2->L)){
-        free(b2);
-    }else{
+    Livre* current = b1->L; // Pointeur vers le premier livre de la première bibliothèque
 
-        Livre* dernier_livre_b1=b1->L;
-
-        while (dernier_livre_b1->suivant!=NULL)
-        {
-            dernier_livre_b1=dernier_livre_b1->suivant;
+    if (current == NULL) {
+        b1->L = b2->L; // Si la première bibliothèque est vide, pointer vers la première de la deuxième
+    } else {
+        while (current->suivant != NULL) {
+            current = current->suivant; // Trouver le dernier livre de la première bibliothèque
         }
-
-        dernier_livre_b1->suivant=b2->L;
-
-        free(b2); 
+        current->suivant = b2->L; // Lier le dernier livre de la première bibliothèque au premier livre de la deuxième
     }
 
+    b2->L = NULL; // Vider la deuxième bibliothèque
 }
 
 
@@ -184,48 +174,66 @@ Biblio* recherche_par_auteur(Biblio* biblio,char* auteur_recherche){
 
     Livre* livre_curr=biblio->L;
     Biblio* biblio_auteur=creer_biblio();
+    int auteur_trouve = 0;
 
     while (livre_curr)
     {
         if(strcmp(livre_curr->auteur,auteur_recherche)==0){
-            inserer_en_tete(biblio_auteur,livre_curr->num,livre_curr->titre,auteur_recherche);
+            inserer_en_tete(biblio_auteur,livre_curr->num,livre_curr->titre,livre_curr->auteur);
+            auteur_trouve=1;
         }
 
         livre_curr=livre_curr->suivant;
 
     }
-    
-    return biblio_auteur;
 
+    if (auteur_trouve==1) {
+        return biblio_auteur;
+    } else {
+        liberer_biblio(biblio_auteur); // Libérer la mémoire si aucun livre de l'auteur n'est trouvé
+        return NULL;
+    }
+}
+
+//fonction pour l'utiliser dans recherches_exemplaires
+int recherche_livre(Biblio* biblio, Livre* livre_recherche) {
+    Livre* livre_curr = biblio->L;
+
+    while (livre_curr) {
+        if (livre_curr->num == livre_recherche->num && strcmp(livre_curr->titre, livre_recherche->titre) == 0 && strcmp(livre_curr->auteur, livre_recherche->auteur) == 0) {
+            return 1; // Livre trouvé
+        }
+        livre_curr = livre_curr->suivant;
+    }
+
+    return 0; // Livre non trouvé
 }
 
 Biblio* recherche_exemplaires(Biblio* biblio){
+	printf("Je suis entré dans recherches\n");
+    	Livre* livre_curr = biblio->L;
 
-    Livre* livre_curr=biblio->L;
-    
+    	Biblio* biblio_exemplaire = creer_biblio();
 
-    Biblio* biblio_exemplaire= creer_biblio();
+    	while (livre_curr) {
+        	Livre* livre_curr2 = biblio->L;
+        	while (livre_curr2) {
+            		if ((strcmp(livre_curr->titre,livre_curr2->titre)==0) && 
+                (strcmp(livre_curr->auteur,livre_curr2->auteur)==0) && 
+                (livre_curr->num != livre_curr2->num)) {
+                
+                // Vérifier si le livre n'est pas déjà dans la bibliothèque des exemplaires
+                		if (recherche_livre(biblio_exemplaire, livre_curr)==0) {
+                    			inserer_en_tete(biblio_exemplaire, livre_curr->num, livre_curr->titre, livre_curr->auteur);
+               			 }
+            		}
+            		livre_curr2 = livre_curr2->suivant;
+        	}
+        	livre_curr = livre_curr->suivant;
+    	}
+    	printf("fin de la boucle\n");
 
-    while (livre_curr)
-    {
-        Livre* livre_curr2=biblio->L;
-        while (livre_curr2)
-        {
-            if (compare_livre(livre_curr,livre_curr2)==2)
-            {
-                inserer_en_tete(biblio_exemplaire,livre_curr->num,livre_curr->titre,livre_curr->auteur);
-            }
-
-            livre_curr2=livre_curr2->suivant;
-
-        }
-        
-        livre_curr=livre_curr->suivant;
-
-    }
-
-    return biblio_exemplaire;
-    
+    	return biblio_exemplaire;
 }
 
 // FONCTION D'AFFICHAGE

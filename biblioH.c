@@ -52,6 +52,12 @@ int compare_livreH(LivreH* livre1,LivreH* livre2){
 
 LivreH* creer_livreH(int num,char* titre,char* auteur){
 
+    // if (titre[0]=='\0' || auteur[0]=='\0')
+    // {
+    //     printf("creer_livreH: auteur ou titre invalide\n");
+    //     return NULL;
+    // }
+
     LivreH* livre=(LivreH*)malloc(sizeof(LivreH));
 
     if (!livre)
@@ -81,7 +87,7 @@ BiblioH* creer_biblioH(int m){
 
     if(biblio==NULL){
         printf("Erreur d'allocation de memoire\n");
-        exit(EXIT_FAILURE);
+        return NULL;
     }
 
     biblio->m=m;
@@ -89,7 +95,9 @@ BiblioH* creer_biblioH(int m){
     biblio->T=(LivreH**)malloc(m*sizeof(LivreH*));
 
 
-
+    for (int i=0;i<m;i++){
+        biblio->T[i]=NULL;
+    }
 
     return biblio;
 
@@ -168,7 +176,7 @@ void supprimer_ouvrageH(BiblioH* biblio,int num,char* titre,char* auteur){
 
 int fonctionHachage(int clef,int m){
 
-  return 1;
+  return abs(m*(clef*A-abs(m*A)))%m;
 
 }
 
@@ -272,6 +280,7 @@ BiblioH* recherche_par_auteurH(BiblioH* biblio,char* auteur_recherche){
         if (strcmp(auteur_recherche,livre_curr->auteur)==0)
         {
             inserer(biblio_auteur,livre_curr->num,livre_curr->titre,livre_curr->auteur);
+            // afficher_livreH(livre_curr);
         }
 
         livre_curr=livre_curr->suivant;
@@ -291,9 +300,9 @@ BiblioH* recherche_exemplairesH(BiblioH* biblio){
     BiblioH* biblio_exemp= creer_biblioH(2);
     LivreH* livre_curr,* livre_compare;
     
-    inserer(biblio_exemp,100,"moi","pas");
-    /* for (int i=0;i<biblio->m;i++){
-        // livre_curr=biblio->T[i];
+
+    for (int i=0;i<biblio->m;i++){
+        livre_curr=biblio->T[i];
 
         while (livre_curr)
         {
@@ -312,7 +321,7 @@ BiblioH* recherche_exemplairesH(BiblioH* biblio){
         }
         
 
-    }*/
+    }
 
     return biblio_exemp;
     
@@ -334,7 +343,6 @@ void afficher_biblioH(BiblioH* biblio){
     }
 
     LivreH* livre_curr;
-    printf("%d %d\n",biblio->m,biblio->nE);
     for (int i=0;i<biblio->m;i++)
     {   
         printf("%d----\n",i);

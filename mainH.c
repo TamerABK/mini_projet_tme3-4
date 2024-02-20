@@ -35,6 +35,7 @@ int main(int argc,char** argv){
 
     BiblioH* biblio=charger_n_entreesH(NOMFIC,N_LIGNES);
     BiblioH* biblio2=charger_n_entreesH("test2.txt",50);
+    afficher_biblioH(biblio2);
     int choix,segfault_prevention=1;
     
     do {
@@ -138,7 +139,6 @@ int main(int argc,char** argv){
             case 9:
                 {
                     enregistrer_biblioH(biblio,"test.txt");
-                    liberer_biblioH(biblio);
                     if(segfault_prevention==1) liberer_biblioH(biblio2);
                     choix=0;
                     printf("Programme terminé.\n");

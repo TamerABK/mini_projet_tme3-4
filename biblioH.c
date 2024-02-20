@@ -216,7 +216,7 @@ void fusion_biblioH(BiblioH* biblio1, BiblioH* biblio2){
 
     for (int i=0;i<biblio2->m;i++)
     {
-        livre_curr=biblio2->T[0];
+        livre_curr=biblio2->T[i];
 
         while (livre_curr)
         {
@@ -226,8 +226,7 @@ void fusion_biblioH(BiblioH* biblio1, BiblioH* biblio2){
         
         
     }
-
-    liberer_biblioH(biblio2);
+    free(biblio2);
     }
     
 

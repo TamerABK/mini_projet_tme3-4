@@ -138,7 +138,6 @@ int main(int argc,char** argv){
                     enregistrer_biblio(biblio,"test.txt");
                     choix=0;
                     printf("Programme terminé.\n");
-                    liberer_biblio(biblio);
                     if (segfault_prevention==1) liberer_biblio(biblio2);
                 }
                 break;
